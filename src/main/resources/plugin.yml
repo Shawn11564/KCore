@@ -1,0 +1,8 @@
+name: KCore
+version: '${project.version}'
+main: dev.mrshawn.kcore.KCore
+api-version: 1.17
+prefix: KCore
+authors: [ MrShawn ]
+description: A server core written in Kotlin
+website: https://mrshawn.dev/
