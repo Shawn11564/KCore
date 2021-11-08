@@ -11,5 +11,5 @@ class KCore : JavaPlugin() {
 	override fun onDisable() {
 		// Plugin shutdown logic
 	}
-	
+
 }
