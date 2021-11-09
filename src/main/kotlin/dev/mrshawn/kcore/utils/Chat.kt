@@ -13,6 +13,8 @@ object Chat {
 			tell(toWhom, message)
 	}
 
+	fun log(message: String) = Bukkit.getConsoleSender().sendMessage(colorize(message))
+
 	fun broadcast(message: String) = Bukkit.broadcastMessage(colorize(message))
 
 	fun clearChat() {
