@@ -1,18 +1,20 @@
 package dev.mrshawn.kcore.frameworks.commands
 
-import org.bukkit.command.Command
-import org.bukkit.command.CommandExecutor
-import org.bukkit.command.CommandSender
+import org.bukkit.command.*
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.util.StringUtil
+import java.util.*
 
-class KCommandManager(private val plugin: JavaPlugin): CommandExecutor {
+class KCommandManager(private val plugin: JavaPlugin): TabExecutor{
 
+	private val completionHandler = CompletionHandler()
 	private val commands = mutableMapOf<String, KCommand>()
 
 	fun registerCommand(command: KCommand) {
 		commands[command.aliases.first()] = command
 
 		plugin.getCommand(command.aliases.first())?.setExecutor(this)
+		plugin.getCommand(command.aliases.first())?.tabCompleter = this
 	}
 
 	private fun matchBaseCommand(command: String): KCommand? {
@@ -34,16 +36,41 @@ class KCommandManager(private val plugin: JavaPlugin): CommandExecutor {
 		return Pair(command, argIndex)
 	}
 
-	override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+	private fun matchSubcommand(baseCommand: KCommand, arg: String): KCommand? {
+        return baseCommand.subcommands.firstOrNull { it.aliases.contains(arg) }
+    }
 
-		val baseCommand = matchBaseCommand(label) ?: return false
+	private fun getTabCompletion(sender: CommandSender, baseCommand: KCommand, args: Array<String>): MutableList<String> {
+		val command = getHighestSubCommand(baseCommand, args)
+		val completion: Array<String> = emptyArray()
+		completion.plus(command.first.tabCompletion)
+
+		return completionHandler.processCompletions(completion, sender)
+	}
+
+	// convert Array<out String> to Array<String>
+	private fun toArray(args: Array<out String>): Array<String> = args.map { it }.toTypedArray()
+
+	private fun sortResults(arg: String, results: MutableList<String>): MutableList<String> {
+        val completions = mutableListOf<String>()
+		StringUtil.copyPartialMatches(arg, results, completions)
+		completions.sort()
+		return completions
+    }
+
+	override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+		val baseCommand = matchBaseCommand(label.removePrefix("kcore:")) ?: return false
 		val (command, argIndex) = getHighestSubCommand(baseCommand, args)
 
-		if (command.canExecute(sender, command.requirePlayer)) {
+		if (command.canExecute(sender, command.requirePlayer))
 			command.execute(sender, args.copyOfRange(argIndex, args.size))
-		}
 
 		return false
+	}
+
+	override fun onTabComplete(sender: CommandSender, cmd: Command, alias: String, args: Array<out String>): MutableList<String> {
+		TODO("finish tab completion")
+		//return sortResults(args[args.size - 1], getTabCompletion(sender,  matchBaseCommand(alias.removePrefix("kcore:")) ?: return mutableListOf(), toArray(args)))
 	}
 
 }

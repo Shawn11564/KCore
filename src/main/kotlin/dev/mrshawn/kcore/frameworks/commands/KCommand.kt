@@ -12,7 +12,19 @@ abstract class KCommand(val aliases: Array<String>, private val description: Str
 
 	val subcommands = mutableListOf<KCommand>()
 
-	fun addSubcommands(subcommands: Array<KCommand>) = subcommands.forEach { this.subcommands.add(it) }
+	val tabCompletion = mutableListOf<String>()
+
+	fun addSubcommand(subcommand: KCommand) = addSubcommands(arrayOf(subcommand))
+	fun addSubcommands(subcommands: Array<KCommand>) {
+		this.subcommands.addAll(subcommands)
+		subcommands.forEach { subcommand ->
+			this.tabCompletion.addAll(subcommand.aliases)
+		}
+	}
+
+	fun addTabCompletion(completion: String) {
+		this.tabCompletion.add(completion)
+	}
 
 	fun canExecute(sender: CommandSender, requirePlayer: Boolean = false): Boolean {
 		return if (requirePlayer && sender !is Player) {

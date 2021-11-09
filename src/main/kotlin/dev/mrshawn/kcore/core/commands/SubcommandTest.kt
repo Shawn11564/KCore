@@ -4,18 +4,19 @@ import dev.mrshawn.kcore.frameworks.commands.KCommand
 import dev.mrshawn.kcore.utils.Chat
 import org.bukkit.command.CommandSender
 
-object TestCommand: KCommand(
-	arrayOf("test"),
-	"Simple test command of the command framework",
-	"/test <args>"
+object SubcommandTest: KCommand(
+	arrayOf("sub"),
+	"Test subcommand",
+	"/test sub"
 ) {
 
 	init {
-		subcommands.add(SubcommandTest)
+		addTabCompletion("@players")
+		addTabCompletion("completion")
 	}
 
 	override fun execute(sender: CommandSender, args: Array<String>) {
-		Chat.tell(sender, "&aTest command executed!")
+		Chat.tell(sender, "&aSubcommand test, args: ${args.toString()}")
 	}
 
 }
