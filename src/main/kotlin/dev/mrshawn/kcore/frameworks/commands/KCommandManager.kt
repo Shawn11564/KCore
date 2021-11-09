@@ -69,7 +69,7 @@ class KCommandManager(private val plugin: JavaPlugin): TabExecutor{
 	}
 
 	override fun onTabComplete(sender: CommandSender, cmd: Command, alias: String, args: Array<out String>): MutableList<String> {
-		TODO("finish tab completion")
+		return mutableListOf()
 		//return sortResults(args[args.size - 1], getTabCompletion(sender,  matchBaseCommand(alias.removePrefix("kcore:")) ?: return mutableListOf(), toArray(args)))
 	}
 

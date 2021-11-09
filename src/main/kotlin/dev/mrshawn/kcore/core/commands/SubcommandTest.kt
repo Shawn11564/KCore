@@ -16,7 +16,8 @@ object SubcommandTest: KCommand(
 	}
 
 	override fun execute(sender: CommandSender, args: Array<String>) {
-		Chat.tell(sender, "&aSubcommand test, args: ${args.toString()}")
+		Chat.tell(sender, "&aSubcommand test, args:")
+		args.forEach { Chat.tell(sender, "&a$it") }
 	}
 
 }
