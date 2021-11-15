@@ -22,8 +22,8 @@ abstract class KCommand(val aliases: Array<String>, private val description: Str
 		}
 	}
 
-	fun addTabCompletion(completion: String) {
-		this.tabCompletion.add(completion)
+	fun addTabCompletions(completion: Array<String>) {
+		this.tabCompletion.addAll(completion)
 	}
 
 	fun canExecute(sender: CommandSender, requirePlayer: Boolean = false): Boolean {
