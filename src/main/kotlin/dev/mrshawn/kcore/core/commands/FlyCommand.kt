@@ -51,6 +51,7 @@ object FlyCommand: KCommand(
 
 	private fun toggleFlight(player: Player) {
 		player.isFlying = !player.isFlying
+		player.allowFlight = player.isFlying
 	}
 
 }

@@ -1,20 +1,40 @@
 package dev.mrshawn.kcore.frameworks.commands
 
+import dev.mrshawn.kcore.utils.Chat
+import org.bukkit.Bukkit
 import org.bukkit.command.*
+import org.bukkit.plugin.SimplePluginManager
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.StringUtil
+import java.lang.reflect.Field
 import java.util.*
 
-class KCommandManager(private val plugin: JavaPlugin): TabExecutor{
+class KCommandManager(private val plugin: JavaPlugin): TabCompleter {
 
+	private var commandMap: CommandMap? = null
 	private val completionHandler = CompletionHandler()
 	private val commands = mutableMapOf<String, KCommand>()
 
-	fun registerCommand(command: KCommand) {
-		commands[command.aliases.first()] = command
+	init {
+		// Get the command map
+		try {
+			// TODO: Use kotlin reflection
+			val field = SimplePluginManager::class.java.getDeclaredField("commandMap")
+			field.isAccessible = true
+			commandMap = field[Bukkit.getPluginManager()] as CommandMap
+		} catch (ex: Exception) {
+			Chat.log("&cFailed to get command map")
+			ex.printStackTrace()
+		}
+	}
 
-		plugin.getCommand(command.aliases.first())?.setExecutor(this)
-		plugin.getCommand(command.aliases.first())?.tabCompleter = this
+	fun registerCommand(command: KCommand) {
+        val commandName = command.aliases.first()
+		commands[commandName] = command
+
+		// register command to command map
+		commandMap?.register(commandName, BukkitCommand(command, this))
+		plugin.getCommand(commandName)?.tabCompleter = this
 	}
 
 	private fun matchBaseCommand(command: String): KCommand? {
@@ -37,8 +57,8 @@ class KCommandManager(private val plugin: JavaPlugin): TabExecutor{
 	}
 
 	private fun matchSubcommand(baseCommand: KCommand, arg: String): KCommand? {
-        return baseCommand.subcommands.firstOrNull { it.aliases.contains(arg) }
-    }
+		return baseCommand.subcommands.firstOrNull { it.aliases.contains(arg) }
+	}
 
 	private fun getTabCompletion(sender: CommandSender, baseCommand: KCommand, args: Array<String>): MutableList<String> {
 		val command = getHighestSubCommand(baseCommand, args)
@@ -52,13 +72,13 @@ class KCommandManager(private val plugin: JavaPlugin): TabExecutor{
 	private fun toArray(args: Array<out String>): Array<String> = args.map { it }.toTypedArray()
 
 	private fun sortResults(arg: String, results: MutableList<String>): MutableList<String> {
-        val completions = mutableListOf<String>()
+		val completions = mutableListOf<String>()
 		StringUtil.copyPartialMatches(arg, results, completions)
 		completions.sort()
 		return completions
-    }
+	}
 
-	override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+	fun executeCommand(sender: CommandSender, label: String, args: Array<String>): Boolean {
 		val baseCommand = matchBaseCommand(label.removePrefix("kcore:")) ?: return false
 		val (command, argIndex) = getHighestSubCommand(baseCommand, args)
 

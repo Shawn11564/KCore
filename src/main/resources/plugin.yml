@@ -6,6 +6,3 @@ prefix: KCore
 authors: [ MrShawn ]
 description: A server core written in Kotlin
 website: https://mrshawn.dev/
-commands:
-  test:
-

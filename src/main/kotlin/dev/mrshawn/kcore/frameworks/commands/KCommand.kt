@@ -4,7 +4,7 @@ import dev.mrshawn.kcore.utils.Chat
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-abstract class KCommand(val aliases: Array<String>, private val description: String?, private val usage: String?, private val permission: String = "", val requirePlayer: Boolean = false) {
+abstract class KCommand(val aliases: Array<String>, val description: String?, val usage: String?, private val permission: String = "", val requirePlayer: Boolean = false) {
 
 	constructor(aliases: Array<String>, description: String?, usage: String?, permission: String, requirePlayer: Boolean, subcommands: Array<KCommand>) : this(aliases, description, usage, permission, requirePlayer) {
 		this.addSubcommands(subcommands)

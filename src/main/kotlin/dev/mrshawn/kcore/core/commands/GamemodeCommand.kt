@@ -33,8 +33,8 @@ object GamemodeCommand : KCommand(
 			if (args.size >= 2) {
 				if (PlayerUtils.isPlayer(args[1])) {
 					val target = PlayerUtils.getPlayer(args[1])
-					target?.gameMode ?: return
-					Chat.tell(sender, "&aSet ${target.name}'s gamemode to ${gameMode.name}")
+					target?.gameMode = gameMode
+					Chat.tell(sender, "&aSet ${target?.name}'s gamemode to ${gameMode.name.lowercase()}")
 					return
 				} else {
 					Chat.tell(sender, "&c${args[1]} is not a valid player!")
@@ -43,7 +43,7 @@ object GamemodeCommand : KCommand(
 			} else {
 				if (sender is Player) {
 					sender.gameMode = gameMode
-					Chat.tell(sender, "&aYour gamemode is now ${gameMode.name}")
+					Chat.tell(sender, "&aYour gamemode is now ${gameMode.name.lowercase()}")
 					return
 				} else {
 					Chat.tell(sender, "&cYou must be a player to use this command!")
